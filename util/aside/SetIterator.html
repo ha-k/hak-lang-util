@@ -1,0 +1,139 @@
+<HTML>
+<HEAD>
+<TITLE>
+SetIterator.html
+</TITLE>
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="D:/hak/hlt/classes/resources/Hilite.Style.css">
+</HEAD>
+<BODY BGCOLOR="#CCCFF">
+<CENTER>
+<TABLE BGCOLOR=white WIDTH=50% BORDER=5 CELLPADDING=20>
+<TR><TD ALIGN=CENTER>
+<SPAN STYLE="FONT-SIZE:XX-LARGE"><TT><B>SetIterator.java</B></TT></SPAN>
+<P>
+</TD></TR>
+</TABLE>
+</CENTER>
+<PRE>
+<SPAN STYLE="COLOR:#88AA66"><EM>//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+</EM></SPAN><SPAN STYLE="COLOR:#88AA66"><EM>// PLEASE DO NOT EDIT WITHOUT THE EXPLICIT CONSENT OF THE AUTHOR! \\
+</EM></SPAN><SPAN STYLE="COLOR:#88AA66"><EM>//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+</EM></SPAN>
+<SPAN STYLE="COLOR:BROWN"><STRONG>package</STRONG></SPAN> hlt.language.util;
+
+<SPAN STYLE="COLOR:BROWN"><STRONG>import</STRONG></SPAN> java.util.<SPAN STYLE="COLOR:#4400DD"><STRONG>Iterator</STRONG></SPAN>;
+
+
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+  This provides an iterator for <tt>SetOf</tt> objects. <b>NB:</b> this
+  is an exact replica of the implementation of <tt>SetEnumeration</tt>
+  with the additional (non-supported) <tt>remove()</tt> method as
+  mandated by the <tt>java.util.Iterator</tt> interface.
+ 
+  <p><b>NB<b>: once built wih the constructor <tt>SetIterator(s)</tt>,
+  a set iterator will not be altered if a set <t>s</t> is modified. In
+  other words, it will keep iterating through the elements of the
+  <i>original</i> set. This is why the method <t>reset(SetOf)</t> is
+  provided.
+ 
+   
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>See also:</STRONG></TD><TD>&nbsp;</TD>
+<TD><A HREF="SetOf.html">SetOf</A>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Copyright:</STRONG></TD><TD>&nbsp;</TD>
+<TD>&copy; <a href="http://www.hassan-ait-kaci.net/">Hassan A&iuml;t-Kaci</a>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Author:</STRONG></TD><TD>&nbsp;</TD>
+<TD><a href="mailto:hak@acm.org">Hassan A&iuml;t-Kaci</a>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Version:</STRONG></TD><TD>&nbsp;</TD>
+<TD>Last modified on Sun Mar 25 09:06:30 2018 by hak
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+
+<SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>class</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetIterator</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>implements</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>Iterator</STRONG></SPAN>
+<SPAN STYLE="COLOR:#444444">{</SPAN>
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>private</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> set;
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>private</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> position = <SPAN STYLE="COLOR:#33AA33">0</SPAN>;
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>private</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN><SPAN STYLE="COLOR:#444444">[</SPAN><SPAN STYLE="COLOR:#444444">]</SPAN> indices;
+
+  <SPAN STYLE="COLOR:#4400DD"><STRONG>SetIterator</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> set<SPAN STYLE="COLOR:#444444">)</SPAN>
+    <SPAN STYLE="COLOR:#444444">{</SPAN>
+      setupIterator<SPAN STYLE="COLOR:#444444">(</SPAN>set<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>private</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>void</STRONG></SPAN> setupIterator <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> set<SPAN STYLE="COLOR:#444444">)</SPAN>
+    <SPAN STYLE="COLOR:#444444">{</SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>set.indices == <SPAN STYLE="COLOR:GREEN">null</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN> set.buildIndices<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+      <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.indices = set.indices;
+      <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.set = set;
+    <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetIterator</STRONG></SPAN> reset <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> set<SPAN STYLE="COLOR:#444444">)</SPAN>
+    <SPAN STYLE="COLOR:#444444">{</SPAN>
+      setupIterator<SPAN STYLE="COLOR:#444444">(</SPAN>set<SPAN STYLE="COLOR:#444444">)</SPAN>;
+      <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+    <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>boolean</STRONG></SPAN> hasNext <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+    <SPAN STYLE="COLOR:#444444">{</SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>indices != <SPAN STYLE="COLOR:GREEN">null</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN> &amp;&amp; <SPAN STYLE="COLOR:#444444">(</SPAN>position &lt; indices.length<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN> next <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+    <SPAN STYLE="COLOR:#444444">{</SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>indices == <SPAN STYLE="COLOR:GREEN">null</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+             ? <SPAN STYLE="COLOR:GREEN">null</SPAN>
+             : set.base.get<SPAN STYLE="COLOR:#444444">(</SPAN>indices<SPAN STYLE="COLOR:#444444">[</SPAN>position++<SPAN STYLE="COLOR:#444444">]</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    This method is not implemented - it just throws an
+    <tt>UnsupportedOperationException</tt>.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>void</STRONG></SPAN> remove <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+    <SPAN STYLE="COLOR:#444444">{</SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>throw</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>UnsupportedOperationException</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:#444444">}</SPAN>
+<SPAN STYLE="COLOR:#444444">}</SPAN>
+
+
+
+
+
+
+</PRE>
+<P>
+<HR>
+<P ALIGN="RIGHT"><SPAN STYLE="COLOR:#F07070"><EM>
+This file was generated on Sat May 11 08:40:08 CEST 2019 from file <SPAN STYLE="COLOR:BROWN"><KBD>SetIterator.java</KBD></SPAN><BR>by the <SPAN STYLE="COLOR:BROWN"><KBD>hlt.language.tools.Hilite</KBD></SPAN> Java tool written by <A HREF="http://hassan-ait-kaci.net">Hassan A&iuml;t-Kaci</A></EM></SPAN>
+<P>
+<HR>
+</BODY>
+</HTML>

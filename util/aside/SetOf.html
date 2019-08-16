@@ -1,0 +1,1612 @@
+<HTML>
+<HEAD>
+<TITLE>
+SetOf.html
+</TITLE>
+<LINK REL="STYLESHEET" TYPE="text/css" HREF="D:/hak/hlt/classes/resources/Hilite.Style.css">
+</HEAD>
+<BODY BGCOLOR="#CCCFF">
+<CENTER>
+<TABLE BGCOLOR=white WIDTH=50% BORDER=5 CELLPADDING=20>
+<TR><TD ALIGN=CENTER>
+<SPAN STYLE="FONT-SIZE:XX-LARGE"><TT><B>SetOf.java</B></TT></SPAN>
+<P>
+</TD></TR>
+</TABLE>
+</CENTER>
+<PRE>
+<SPAN STYLE="COLOR:#88AA66"><EM>//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+</EM></SPAN><SPAN STYLE="COLOR:#88AA66"><EM>// PLEASE DO NOT EDIT WITHOUT THE EXPLICIT CONSENT OF THE AUTHOR! \\
+</EM></SPAN><SPAN STYLE="COLOR:#88AA66"><EM>//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+</EM></SPAN>
+<SPAN STYLE="COLOR:BROWN"><STRONG>package</STRONG></SPAN> hlt.language.util;
+
+<SPAN STYLE="COLOR:BROWN"><STRONG>import</STRONG></SPAN> java.util.<SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN>;
+<SPAN STYLE="COLOR:BROWN"><STRONG>import</STRONG></SPAN> java.util.<SPAN STYLE="COLOR:#4400DD"><STRONG>AbstractList</STRONG></SPAN>;
+<SPAN STYLE="COLOR:BROWN"><STRONG>import</STRONG></SPAN> java.util.<SPAN STYLE="COLOR:#4400DD"><STRONG>Vector</STRONG></SPAN>;
+<SPAN STYLE="COLOR:BROWN"><STRONG>import</STRONG></SPAN> java.util.<SPAN STYLE="COLOR:#4400DD"><STRONG>Enumeration</STRONG></SPAN>;
+<SPAN STYLE="COLOR:BROWN"><STRONG>import</STRONG></SPAN> java.util.<SPAN STYLE="COLOR:#4400DD"><STRONG>Iterator</STRONG></SPAN>;
+
+
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+  This class is a generic data type for sets of objects. Instances of
+  this class denote subsets of a fixed reference set - an
+  <tt>AbstractList</tt> of <b>Object</b>s - called the <i>base
+  structure</i>. All sets operations are implemented efficiently using
+  an underlying bitset representation.  In effect, using this class
+  alleviates the need to deal directly with the represention and always
+  manipulate sets as implicit collections of objects.
+ 
+  <p>
+ 
+  This package also defines classes for iterating through
+  <tt>SetOf</tt> objects: an <tt>Enumeration</tt> class
+  (<tt>SetEnumeration</tt>), an <tt>IndexEnumeration</tt> class
+  (<tt>SetIndices</tt>), and an <tt>Iterator</tt> class
+  (<tt>SetIterator</tt>).
+ 
+  <p>
+ 
+  <b>NB:</b> There are some caveats to be aware of when using
+  <tt>SetOf</tt>:
+  <ul>
+  <li> this class will work correctly assuming that no element
+       is ever removed from the base structure;
+  <li> for efficiency reasons, no check is made that the base
+       structure is indeed a set (<i>i.e.</i>, contains no duplicates);
+  </ul>
+ 
+       
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>See also:</STRONG></TD><TD>&nbsp;</TD>
+<TD><A HREF="SetEnumeration.html">SetEnumeration</A>, <A HREF="SetIndices.html">SetIndices</A>, <A HREF="SetIterator.html">SetIterator</A>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Copyright:</STRONG></TD><TD>&nbsp;</TD>
+<TD>&copy; <a href="http://www.hassan-ait-kaci.net/">Hassan A&iuml;t-Kaci</a>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Author:</STRONG></TD><TD>&nbsp;</TD>
+<TD><a href="mailto:hak@acm.org">Hassan A&iuml;t-Kaci</a>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Version:</STRONG></TD><TD>&nbsp;</TD>
+<TD>Last modified on Sat May 11 06:26:54 2019 by hak
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+<SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>class</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN>
+<SPAN STYLE="COLOR:#444444">{</SPAN>
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    The base structure comprising the collection of all elements.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:#4400DD"><STRONG>AbstractList</STRONG></SPAN> base;
+  
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    This set's underlying representation as a bit word.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN> carrier;
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Constructs a new (empty) set with the specified array base,
+    which is built as a <tt>Vector</tt> if <tt>synchronize</tt>
+    is <tt>true</tt>, or as an <tt>ArrayList</tt> otherwise.
+    
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>base&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-         the reference set as an array</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>synchronize&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  if <tt>true</tt>, the base structure is synchronized</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN><SPAN STYLE="COLOR:#444444">[</SPAN><SPAN STYLE="COLOR:#444444">]</SPAN> base, <SPAN STYLE="COLOR:BLUE"><STRONG>boolean</STRONG></SPAN> synchronize<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>synchronize<SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.base = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>Vector</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base.length<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>else</STRONG></SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.base = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>ArrayList</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base.length<SPAN STYLE="COLOR:#444444">)</SPAN>;
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>for</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> i=<SPAN STYLE="COLOR:#33AA33">0</SPAN>; i&lt;base.length; i++<SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.base.add<SPAN STYLE="COLOR:#444444">(</SPAN>base<SPAN STYLE="COLOR:#444444">[</SPAN>i<SPAN STYLE="COLOR:#444444">]</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+    carrier = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base.length<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Constructs a new (empty) set with the specified array base.
+    <b>NB:</b> the concrete base structure used is an <tt>ArrayList</tt>
+    - that is, it is unsynchronized. For a synchronized base, use
+    <tt>SetOf(Object[],true)</tt>.
+    
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>base&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the reference set as an array</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN><SPAN STYLE="COLOR:#444444">[</SPAN><SPAN STYLE="COLOR:#444444">]</SPAN> base<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.base = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>ArrayList</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base.length<SPAN STYLE="COLOR:#444444">)</SPAN>;
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>for</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> i=<SPAN STYLE="COLOR:#33AA33">0</SPAN>; i&lt;base.length; i++<SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.base.add<SPAN STYLE="COLOR:#444444">(</SPAN>base<SPAN STYLE="COLOR:#444444">[</SPAN>i<SPAN STYLE="COLOR:#444444">]</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+    carrier = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base.length<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Constructs a new (empty) set with the specified AbstractList base.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>base&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the reference set as an AbstractList.</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>AbstractList</STRONG></SPAN> base<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.base = base;
+    carrier = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.base.size<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Constructs a new singleton set containing the single
+    specified index with the specified AbstractList base.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>base&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the reference set as a AbstractList</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>index&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the index of the object</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>AbstractList</STRONG></SPAN> base, <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> index<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base<SPAN STYLE="COLOR:#444444">)</SPAN>.add<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Constructs a new singleton set containing the single
+    specified index with the specified array base.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>base&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the reference set as an array</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>index&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the index of the object</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN><SPAN STYLE="COLOR:#444444">[</SPAN><SPAN STYLE="COLOR:#444444">]</SPAN> base, <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> index<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base<SPAN STYLE="COLOR:#444444">)</SPAN>.add<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Constructs a new singleton set containing the single
+    specified object with the specified AbstractList base.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>base&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the reference set as a AbstractList</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>object&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the object</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>AbstractList</STRONG></SPAN> base, <SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN> object<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base<SPAN STYLE="COLOR:#444444">)</SPAN>.add<SPAN STYLE="COLOR:#444444">(</SPAN>object<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Constructs a new singleton set containing the single
+    specified object with the specified array base.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>base&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the reference set as an array</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>object&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the object</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN><SPAN STYLE="COLOR:#444444">[</SPAN><SPAN STYLE="COLOR:#444444">]</SPAN> base, <SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN> object<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base<SPAN STYLE="COLOR:#444444">)</SPAN>.add<SPAN STYLE="COLOR:#444444">(</SPAN>object<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Constructs a copy of the  specified set.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>set&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the set to copy</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> set<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    base = set.base;
+    carrier = <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>set.carrier.clone<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Constructs a new set with the specified base and underlying bitset
+    representation.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>base&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the reference set as an array</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>carrier&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the bitset representation</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN><SPAN STYLE="COLOR:#444444">[</SPAN><SPAN STYLE="COLOR:#444444">]</SPAN> base, <SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN> carrier<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.base = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>ArrayList</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base.length<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>for</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> i=<SPAN STYLE="COLOR:#33AA33">0</SPAN>; i&lt;base.length; i++<SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.base.add<SPAN STYLE="COLOR:#444444">(</SPAN>base<SPAN STYLE="COLOR:#444444">[</SPAN>i<SPAN STYLE="COLOR:#444444">]</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.carrier = carrier;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Constructs a new set with the specified base and underlying bitset
+    representation.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>base&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the reference set as a AbstractList</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>carrier&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the bitset representation</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>AbstractList</STRONG></SPAN> base, <SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN> carrier<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.base = base;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.carrier = carrier;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  <SPAN STYLE="COLOR:#88AA66"><EM>//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+</EM></SPAN>
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    This is an array that is set to contain the base AbstractList
+    indices of this set elements when iterating through the set (i.e.,
+    when a <tt>SetEnumeration</tt> or <tt>SetIndices</tt> is built on
+    this set). It is reset to null anytime the set is modified.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+  
+  <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN><SPAN STYLE="COLOR:#444444">[</SPAN><SPAN STYLE="COLOR:#444444">]</SPAN> indices = <SPAN STYLE="COLOR:GREEN">null</SPAN>;
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Counts and returns the number of elements currently in this set.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>private</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> count <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> carrier.size<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Builds the array of indices corresponding to this set.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>void</STRONG></SPAN> buildIndices <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>!isEmpty<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	indices = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN><SPAN STYLE="COLOR:#444444">[</SPAN>count<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">]</SPAN>;
+	<SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> index = <SPAN STYLE="COLOR:#33AA33">0</SPAN>;
+	<SPAN STYLE="COLOR:BROWN"><STRONG>for</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> i = carrier.nextSetBit<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#33AA33">0</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>; i &gt;= <SPAN STYLE="COLOR:#33AA33">0</SPAN>; i = carrier.nextSetBit<SPAN STYLE="COLOR:#444444">(</SPAN>i+<SPAN STYLE="COLOR:#33AA33">1</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>	  
+	  indices<SPAN STYLE="COLOR:#444444">[</SPAN>index++<SPAN STYLE="COLOR:#444444">]</SPAN> = i;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    The underlying representation for the empty set.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>private</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>static</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN> <SPAN STYLE="COLOR:GREEN">EMPTY_BITSET</SPAN> = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    A private representation for the full set.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>See also:</STRONG></TD><TD>&nbsp;</TD>
+<TD><A HREF="#top()">top()</A>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>private</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>static</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> <SPAN STYLE="COLOR:GREEN">FULL_SET</SPAN>;
+
+  <SPAN STYLE="COLOR:#88AA66"><EM>//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+</EM></SPAN>
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns the number of elements in this set.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> size <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>indices == <SPAN STYLE="COLOR:GREEN">null</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> count<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> indices.length;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns a set representing the reference set; that is, a set
+    containing all the base structure's elements.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> top <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:GREEN">FULL_SET</SPAN>==<SPAN STYLE="COLOR:GREEN">null</SPAN> || <SPAN STYLE="COLOR:GREEN">FULL_SET</SPAN>.base != base<SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	<SPAN STYLE="COLOR:GREEN">FULL_SET</SPAN> = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>base<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	<SPAN STYLE="COLOR:BROWN"><STRONG>for</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> i=<SPAN STYLE="COLOR:#33AA33">0</SPAN>; i&lt;base.size<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>; i++<SPAN STYLE="COLOR:#444444">)</SPAN>	  
+	  <SPAN STYLE="COLOR:GREEN">FULL_SET</SPAN>.carrier.set<SPAN STYLE="COLOR:#444444">(</SPAN>i<SPAN STYLE="COLOR:#444444">)</SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:GREEN">FULL_SET</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns true iff this set contains all the base structure's elements.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>boolean</STRONG></SPAN> isFull <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> carrier.equals<SPAN STYLE="COLOR:#444444">(</SPAN>top<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns true iff this set is empty.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>boolean</STRONG></SPAN> isEmpty <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> carrier.equals<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:GREEN">EMPTY_BITSET</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns the index of a specified object element of this set.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>object&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the object</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>the desired index or -1 if the object is not there
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+ 
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> indexOf <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN> object<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>object <SPAN STYLE="COLOR:BROWN"><STRONG>instanceof</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>Indexed</STRONG></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#88AA66"><EM>// WARNING: this works only if
+</EM></SPAN>      <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Indexed</STRONG></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>object<SPAN STYLE="COLOR:#444444">)</SPAN>.index; <SPAN STYLE="COLOR:#88AA66"><EM>// index is the position in base 
+</EM></SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> base.indexOf<SPAN STYLE="COLOR:#444444">(</SPAN>object<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Adds the element of specified index into this set.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>index&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the index</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>this set
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> add <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> index<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>indices == <SPAN STYLE="COLOR:GREEN">null</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	carrier.set<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	<SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>!carrier.get<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	carrier.set<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	indices = <SPAN STYLE="COLOR:GREEN">null</SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+  
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Adds a specified object into this set.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>object&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the object</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>this set
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> add <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN> object<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    carrier.set<SPAN STYLE="COLOR:#444444">(</SPAN>indexOf<SPAN STYLE="COLOR:#444444">(</SPAN>object<SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;     
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns a new set obtained from the given set after adding
+    the given index.
+               
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>s&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>index&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the index</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>a new set which is s with the object at index added
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>static</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> add <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> s, <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> index<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> newset = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>s<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    newset.carrier.set<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> newset;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Removes the element at specified index from this set.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>index&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the index</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>this set
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> remove <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> index<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>indices == <SPAN STYLE="COLOR:GREEN">null</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	carrier.clear<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	<SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>carrier.get<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	carrier.clear<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	indices = <SPAN STYLE="COLOR:GREEN">null</SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Removes the specified object from this set.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>object&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the object</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>this set
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> remove <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN> object<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> remove<SPAN STYLE="COLOR:#444444">(</SPAN>indexOf<SPAN STYLE="COLOR:#444444">(</SPAN>object<SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns a new set obtained from the given set after removing
+    the element at the given index.
+               
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>s&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>index&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the index</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>a new set which is s deprived of the object at index
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>static</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> remove <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> s, <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> index<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> newset = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>s<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    newset.carrier.clear<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> newset;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns the base index of the first element in this set.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>the desired index or -1 if empty.
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> firstIndex <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>!isEmpty<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	<SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>indices != <SPAN STYLE="COLOR:GREEN">null</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+	  <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> indices<SPAN STYLE="COLOR:#444444">[</SPAN><SPAN STYLE="COLOR:#33AA33">0</SPAN><SPAN STYLE="COLOR:#444444">]</SPAN>;
+
+	<SPAN STYLE="COLOR:BROWN"><STRONG>for</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> i=<SPAN STYLE="COLOR:#33AA33">0</SPAN>; i&lt;base.size<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>; i++<SPAN STYLE="COLOR:#444444">)</SPAN>	  
+	  <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>carrier.get<SPAN STYLE="COLOR:#444444">(</SPAN>i<SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+	    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> i;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> -<SPAN STYLE="COLOR:#33AA33">1</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns the first element in this set.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>the desired element or <b>null</b> if empty.
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN> firstElement <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> i = firstIndex<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>i&lt;<SPAN STYLE="COLOR:#33AA33">0</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN> ? <SPAN STYLE="COLOR:GREEN">null</SPAN> : base.get<SPAN STYLE="COLOR:#444444">(</SPAN>i<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    <i><b>NB:</b> The following set operations assume that all
+    operands refer to the same base structure.</i>
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Modifies this set to the union of this set and the specified set.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>other&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>this set
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> union <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> other<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>indices == <SPAN STYLE="COLOR:GREEN">null</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	carrier.or<SPAN STYLE="COLOR:#444444">(</SPAN>other.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	<SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>!other.isSubsetOf<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	carrier.or<SPAN STYLE="COLOR:#444444">(</SPAN>other.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	indices = <SPAN STYLE="COLOR:GREEN">null</SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns the union of two sets without modifying either one.
+               
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>s1&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>s2&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>a new set which is the union of s1 and s2
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>static</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> union <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> s1, <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> s2<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> newset = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>s1<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    newset.carrier.or<SPAN STYLE="COLOR:#444444">(</SPAN>s2.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> newset;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Modifies this set to the intersection of this set and the specified set.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>other&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>this set
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> intersection <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> other<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>indices == <SPAN STYLE="COLOR:GREEN">null</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	carrier.and<SPAN STYLE="COLOR:#444444">(</SPAN>other.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	<SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>!<SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.isSubsetOf<SPAN STYLE="COLOR:#444444">(</SPAN>other<SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	carrier.and<SPAN STYLE="COLOR:#444444">(</SPAN>other.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	indices = <SPAN STYLE="COLOR:GREEN">null</SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns the intersection of two sets without modifying either one.
+               
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>s1&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>s2&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>a new set which is the intersection of s1 and s2
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>static</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> intersection <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> s1, <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> s2<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> newset = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>s1<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    newset.carrier.and<SPAN STYLE="COLOR:#444444">(</SPAN>s2.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> newset;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Modifies this set to the difference of this set and the specified set.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>other&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>this set
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> minus <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> other<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>indices == <SPAN STYLE="COLOR:GREEN">null</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	carrier.or<SPAN STYLE="COLOR:#444444">(</SPAN>other.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	carrier.xor<SPAN STYLE="COLOR:#444444">(</SPAN>other.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	<SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>!intersection<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>,other<SPAN STYLE="COLOR:#444444">)</SPAN>.isEmpty<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	carrier.or<SPAN STYLE="COLOR:#444444">(</SPAN>other.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	carrier.xor<SPAN STYLE="COLOR:#444444">(</SPAN>other.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+	indices = <SPAN STYLE="COLOR:GREEN">null</SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns the difference of two sets without modifying either one.
+               
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>s1&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>s2&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>a new set which is the difference of s1 and s2
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>static</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> minus <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> s1, <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> s2<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> newset = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>s1<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    newset.carrier.or<SPAN STYLE="COLOR:#444444">(</SPAN>s2.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    newset.carrier.xor<SPAN STYLE="COLOR:#444444">(</SPAN>s2.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> newset;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Modifies this set to its complement (relative to the base).
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Returns:</STRONG></TD><TD>&nbsp;</TD>
+<TD>this set
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> not <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    carrier.xor<SPAN STYLE="COLOR:#444444">(</SPAN>top<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    indices = <SPAN STYLE="COLOR:GREEN">null</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns the complement (relative to the base) of the specified set
+    without modifying it.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>s&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>static</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> not <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> s<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> newset = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN>s<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    newset.carrier.xor<SPAN STYLE="COLOR:#444444">(</SPAN>s.top<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> newset;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns true iff the specified index is that of an element of this set.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>index&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the index</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>boolean</STRONG></SPAN> contains <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> index<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> carrier.get<SPAN STYLE="COLOR:#444444">(</SPAN>index<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns true iff the specified object is an element of this set.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>object&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  the object</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>boolean</STRONG></SPAN> contains <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN> object<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> carrier.get<SPAN STYLE="COLOR:#444444">(</SPAN>indexOf<SPAN STYLE="COLOR:#444444">(</SPAN>object<SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns true iff this set is included in or equal to the
+    specified set.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>other&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>boolean</STRONG></SPAN> isSubsetOf <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> other<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN> intersection = <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>BitSet</STRONG></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>carrier.clone<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+    intersection.and<SPAN STYLE="COLOR:#444444">(</SPAN>other.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> carrier.equals<SPAN STYLE="COLOR:#444444">(</SPAN>intersection<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns true iff this set is strictly included in the
+    specified set.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>other&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>boolean</STRONG></SPAN> isStrictSubsetOf <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> other<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> isSubsetOf<SPAN STYLE="COLOR:#444444">(</SPAN>other<SPAN STYLE="COLOR:#444444">)</SPAN> &amp;&amp; size<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN> != other.size<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns true iff this set is equal to the specified set.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>other&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a set</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>boolean</STRONG></SPAN> isEqualTo <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN> other<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> carrier.equals<SPAN STYLE="COLOR:#444444">(</SPAN>other.carrier<SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns true iff the specified object is a set equal to this.
+       
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>other&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  an object</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>boolean</STRONG></SPAN> equals <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Object</STRONG></SPAN> other<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>other <SPAN STYLE="COLOR:BROWN"><STRONG>instanceof</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+      <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN>.isEqualTo<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>SetOf</STRONG></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>other<SPAN STYLE="COLOR:#444444">)</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:GREEN">false</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns a hashcode for this set.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> hashCode <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> carrier.hashCode<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns a string representation of this set as a comma-separated
+    list of elements between curly braces.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>String</STRONG></SPAN> toString <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:#4400DD"><STRONG>String</STRONG></SPAN> s = <SPAN STYLE="COLOR:#D2691E"><EM>""</EM></SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>for</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#4400DD"><STRONG>Iterator</STRONG></SPAN> i=iterator<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>; i.hasNext<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;<SPAN STYLE="COLOR:#444444">)</SPAN>      
+      <SPAN STYLE="COLOR:#444444">{</SPAN>
+	<SPAN STYLE="COLOR:BROWN"><STRONG>if</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN>s.length<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN> &gt; <SPAN STYLE="COLOR:#33AA33">0</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+	  s += <SPAN STYLE="COLOR:#D2691E"><EM>", "</EM></SPAN>;
+	s += i.next<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>.toString<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+      <SPAN STYLE="COLOR:#444444">}</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:#D2691E"><EM>"{"</EM></SPAN> + s + <SPAN STYLE="COLOR:#D2691E"><EM>"}"</EM></SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns a string representation of this set as a bit string of 0's and 1's.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>String</STRONG></SPAN> toBitString <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> toBitString<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#D2691E"><EM>'0'</EM></SPAN>,<SPAN STYLE="COLOR:#D2691E"><EM>'1'</EM></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns a string representation of this set as a bit string of two
+    specified characters standing for "absent" and "present" respectively.
+           
+<P><TABLE>
+<TR><TD VALIGN=TOP><STRONG>Parameters:</STRONG></TD><TD>&nbsp;</TD>
+<TD><TABLE>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>out&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a character</SPAN></TD></TR>
+<TR><TD VALIGN=BASELINE><SPAN STYLE="COLOR:BLACK"><TT>in&nbsp;</TT></SPAN></TD><TD><SPAN STYLE="COLOR:BLACK">-  a character</SPAN></TD></TR>
+</TABLE>
+</TD></tr>
+</TABLE>
+
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>String</STRONG></SPAN> toBitString <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>char</STRONG></SPAN> out, <SPAN STYLE="COLOR:BLUE"><STRONG>char</STRONG></SPAN> in<SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:#4400DD"><STRONG>StringBuilder</STRONG></SPAN> s = <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>StringBuilder</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>for</STRONG></SPAN> <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BLUE"><STRONG>int</STRONG></SPAN> i=<SPAN STYLE="COLOR:#33AA33">0</SPAN>; i&lt;base.size<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>; i++<SPAN STYLE="COLOR:#444444">)</SPAN>      
+      s.append<SPAN STYLE="COLOR:#444444">(</SPAN>carrier.get<SPAN STYLE="COLOR:#444444">(</SPAN>i<SPAN STYLE="COLOR:#444444">)</SPAN> ? in : out<SPAN STYLE="COLOR:#444444">)</SPAN>;
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> s.toString<SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns an <b>Enumeration</b> over the object elements of this set.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>Enumeration</STRONG></SPAN> elements <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetEnumeration</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns an <b>Iterator</b> over the object elements of this set.<br>
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>Iterator</STRONG></SPAN> iterator <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetIterator</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+  
+</PRE>
+<HR>
+<CENTER>
+<TABLE BGCOLOR="WHITE" WIDTH=90% BORDER=1 CELLPADDING=10>
+<TR><TD><SPAN STYLE="COLOR:BLACK">
+
+    Returns an enumeration-like object over the base structure's indices for
+    the elements of this set.
+   
+</SPAN></TD></TR>
+</TABLE>
+</CENTER>
+<P>
+<PRE>
+
+  <SPAN STYLE="COLOR:PURPLE"><STRONG>public</STRONG></SPAN> <SPAN STYLE="COLOR:PURPLE"><STRONG>final</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>IndexEnumeration</STRONG></SPAN> indices <SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>
+  <SPAN STYLE="COLOR:#444444">{</SPAN>
+    <SPAN STYLE="COLOR:BROWN"><STRONG>return</STRONG></SPAN> <SPAN STYLE="COLOR:BROWN"><STRONG>new</STRONG></SPAN> <SPAN STYLE="COLOR:#4400DD"><STRONG>SetIndices</STRONG></SPAN><SPAN STYLE="COLOR:#444444">(</SPAN><SPAN STYLE="COLOR:BROWN"><STRONG>this</STRONG></SPAN><SPAN STYLE="COLOR:#444444">)</SPAN>;
+  <SPAN STYLE="COLOR:#444444">}</SPAN>
+
+<SPAN STYLE="COLOR:#444444">}</SPAN>
+
+</PRE>
+<P>
+<HR>
+<P ALIGN="RIGHT"><SPAN STYLE="COLOR:#F07070"><EM>
+This file was generated on Sat May 11 08:40:08 CEST 2019 from file <SPAN STYLE="COLOR:BROWN"><KBD>SetOf.java</KBD></SPAN><BR>by the <SPAN STYLE="COLOR:BROWN"><KBD>hlt.language.tools.Hilite</KBD></SPAN> Java tool written by <A HREF="http://hassan-ait-kaci.net">Hassan A&iuml;t-Kaci</A></EM></SPAN>
+<P>
+<HR>
+</BODY>
+</HTML>
